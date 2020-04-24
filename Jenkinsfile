@@ -3,9 +3,9 @@ pipeline {
     registry = "ryasmeen/nginx-hello"
     registryCredential = 'docker-hub-credentials'
     dockerImage = ''
-	CHECK_URL_DEV = "http://192.168.1.234:8001"
+    CHECK_URL_DEV = "http://192.168.1.234:8001"
     CMD_DEV = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_DEV}"
-	CHECK_URL_PROD = "http://192.168.1.235:8001"
+    CHECK_URL_PROD = "http://192.168.1.235:8001"
     CMD_PROD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_PROD}"
   }
   agent any
@@ -18,18 +18,18 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+          dockerImage = docker.build registry + ":latest"
         }
       }
     }
-	stage('Test image') {
-    // Testing using goss
+    /* stage('Test image') {
+     Testing using goss
       steps {
         script {
-          sh 'dgoss run ${dockerImage}'
+          sh 'dgoss run ryasmeen/nginx-hello:latest'
         }
       }
-    }
+    } */
     stage('Push - Deploy Image') {
       steps {
         script {
