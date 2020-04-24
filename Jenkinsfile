@@ -44,7 +44,7 @@ pipeline {
 			script {
 				sshagent (credentials: ['caas-master-ssh-key']) {
 					sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 uptime'
-					// sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 sudo docker rm -f mynginx'
+					sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 sudo docker rm -f mynginx'
 					sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 sudo docker run -d --name mynginx -it -p 8001:80 ${registry}:latest'
 				}
             }
@@ -73,7 +73,7 @@ pipeline {
 			script {
 				sshagent (credentials: ['podman-master-ssh-key']) {
 					sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 uptime'
-					// sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 sudo docker rm -f mynginx'
+					sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 sudo docker rm -f mynginx'
 					sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 sudo docker run -d --name mynginx -it -p 8001:80 ${registry}:latest'
 				}
             }
