@@ -7,8 +7,10 @@ pipeline {
     HOSTB = "192.168.1.241"
     CHECK_URL_DEV = "http://192.168.1.234:8001"
     CMD_DEV = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_DEV}"
-    CHECK_URL_PROD = "http://192.168.1.241:8001"
-    CMD_PROD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_PROD}"
+    CHECK_URL_UAT = "http://192.168.1.241:8001"
+    CMD_UAT = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_UAT}"
+    CHECK_URL_AZURE = "https://myweb-nginx.azurewebsites.net/"
+    CMD_AZURE = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_AZURE}"
     webAppResourceGroup = 'ryasmeen-linux-rg'
     webAppResourcePlan = 'ryasmeen-app-service-plan'
     webAppName = 'myweb-nginx'
@@ -75,7 +77,7 @@ pipeline {
                 }
         }
 
-    stage ('Deploy To Prod') {
+    stage ('Deploy To UAT') {
                 steps {
                         script {
                                 sshagent (credentials: ['podman-master-ssh-key']) {
@@ -87,11 +89,11 @@ pipeline {
         }
     }
 
-        stage('Test Prod') {
+        stage('Test UAT') {
                 steps {
                         script{
                                 // sh "curl --write-out %{http_code} --silent --output /dev/null http://192.168.1.235:8001 > commandResult"
-                                sh "${CMD_PROD} > commandResult"
+                                sh "${CMD_UAT} > commandResult"
                                 env.status = readFile('commandResult').trim()
                                 sh "echo ${env.status}"
                                 if (env.status == '200') {
@@ -118,5 +120,24 @@ pipeline {
 							}
 					}
 			}
-		}
+
+
+        stage('Test Azure App') {
+                steps {
+                        script{
+                                // sh "curl --write-out %{http_code} --silent --output /dev/null http://192.168.1.235:8001 > commandResult"
+                                sh "${CMD_AZURE} > commandResult"
+                                env.status = readFile('commandResult').trim()
+                                sh "echo ${env.status}"
+                                if (env.status == '200') {
+                                                currentBuild.result = "SUCCESS"
+                                }
+                                else {
+                                                currentBuild.result = "FAILURE"
+                                }
+                        }
+                }
+        }
+
+     }
 }
