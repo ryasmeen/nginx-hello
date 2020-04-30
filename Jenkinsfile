@@ -9,7 +9,7 @@ pipeline {
     CMD_DEV = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_DEV}"
     CHECK_URL_PROD = "http://192.168.1.241:8001"
     CMD_PROD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_PROD}"
-    webAppResourceGroup = 'ryasmeen-linux-rg'
+    webAppResourceGroup = 'rylinuxrg'
     webAppResourcePlan = 'ryasmeen-app-service-plan'
     webAppName = 'myweb-nginx'
     imageName = 'myweb-nginx'
