@@ -9,7 +9,7 @@ pipeline {
     CMD_DEV = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_DEV}"
     CHECK_URL_PROD = "http://192.168.1.241:8001"
     CMD_PROD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_PROD}"
-    webAppResourceGroup = 'rylinuxrg'
+    webAppResourceGroup = 'ryasmeen-linux-rg'
     webAppResourcePlan = 'ryasmeen-app-service-plan'
     webAppName = 'myweb-nginx'
     imageName = 'myweb-nginx'
@@ -113,7 +113,7 @@ pipeline {
 								az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
 								az account set -s $AZURE_SUBSCRIPTION_ID
 								'''
-								sh "az webapp create -g {webAppResourceGroup} -p ${webAppResourcePlan} -n ${webAppName} -i ${registry}:${imageWithTag}"
+								sh "az webapp create -g ${webAppResourceGroup} -p ${webAppResourcePlan} -n ${webAppName} -i ${registry}:${imageWithTag}"
 								}
 							}
 					}
