@@ -3,9 +3,11 @@ pipeline {
     registry = "ryasmeen/nginx-hello"
     registryCredential = 'docker-hub-credentials'
     dockerImage = ''
+    HOST-A = "192.168.1.234"
+    HOST-B = "192.168.1.241"
     CHECK_URL_DEV = "http://192.168.1.234:8001"
     CMD_DEV = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_DEV}"
-    CHECK_URL_PROD = "http://192.168.1.235:8001"
+    CHECK_URL_PROD = "http://192.168.1.241:8001"
     CMD_PROD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL_PROD}"
     webAppResourceGroup = 'ryasmeen-linux-rg'
     webAppResourcePlan = 'ryasmeen-app-service-plan'
@@ -48,9 +50,9 @@ pipeline {
                 steps {
                         script {
                                 sshagent (credentials: ['caas-master-ssh-key']) {
-                                        sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 uptime'
-                                        sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 sudo docker rm -f ${webAppName}'
-                                        sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen 192.168.1.234 sudo docker run -d --name ${webAppName} -it -p 8001:80 ${registry}:latest'
+                                        sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen ${HOST-A} uptime'
+                                        sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen ${HOST-A} sudo docker rm -f ${webAppName}'
+                                        sh 'ssh -o StrictHostKeyChecking=no -l ryasmeen ${HOST-A} sudo docker run -d --name ${webAppName} -it -p 8001:80 ${registry}:latest'
                                 }
             }
         }
@@ -77,9 +79,9 @@ pipeline {
                 steps {
                         script {
                                 sshagent (credentials: ['podman-master-ssh-key']) {
-                                        sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 uptime'
-                                        sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 sudo docker rm -f ${webAppName}'
-                                        sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 192.168.1.235 sudo docker run -d --name ${webAppName}' -it -p 8001:80 ${registry}:latest'
+                                        sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 ${HOST-B} uptime'
+                                        sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 ${HOST-B} sudo docker rm -f ${webAppName}'
+                                        sh 'ssh -o StrictHostKeyChecking=no -l amohamm2 ${HOST-B} sudo docker run -d --name ${webAppName} -it -p 8001:80 ${registry}:latest'
                                 }
             }
         }
@@ -106,7 +108,7 @@ pipeline {
 				steps {
 						script{
 								// login Azure
-								withCredentials([azureServicePrincipal('<mySrvPrincipal>')]) {
+								withCredentials([azureServicePrincipal('<ryazsvprincipal>')]) {
 								sh '''
 								az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
 								az account set -s $AZURE_SUBSCRIPTION_ID
@@ -117,5 +119,4 @@ pipeline {
 					}
 			}
 		}
-	}
 }
